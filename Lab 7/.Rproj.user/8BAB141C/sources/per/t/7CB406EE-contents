@@ -1,0 +1,262 @@
+---
+title: "STATS 250 Lab 3"
+author: "YOUR NAME HERE"
+date: "Week of September 26, 2022"
+output:
+  beamer_presentation:
+    theme: AnnArbor
+    fig_crop: no
+    fig_width: 6
+    fig_height: 4
+  pdf_document: default
+urlcolor: blue
+---
+
+# Announcements & Recap
+
+## Announcements
+Insert any relevant announcements, important dates, things you want to remember here.
+
+For instance, you might have them remember the date and time that homework and lab are due, and remind them that the deadlines are firm.
+
+## Lab 2 Recap
+Write down some common errors that you spotted while you graded/had office hours for Lab 2.
+
+## HW 2 Recap
+Write down some common errors that you spotted while you graded/had office hours for the HW 2.
+
+# Learning Objectives
+
+## R Learning Objectives
+1. Creating a plot of (x,y) quantitative values.
+1. Finding the correlation coefficient between two quantitative variables.
+1. Creating a subset containing only selected variables
+1. Creating a linear model and finding the relevant values
+1. Creating a plot of (x,y) quantitative values with the least-squares regression line.
+
+## Statistical Learning Objectives
+1. Scatterplots with linear associations
+1. Discussing the correlation coefficient
+1. Discussing other important values in linear regression, such as R^2.
+1. Discussing the least-squares regression line
+  
+## Functions covered in this lab
+1. `plot()`
+1. `cor()`
+1. `lm()`
+1. `subset()`
+1. `abline()`
+
+# Lab Tutorial
+
+## Penguins data set
+We're back to hanging out with our penguin friends.
+
+```{r penguins}
+penguins <- read.csv("penguins.csv", stringsAsFactors = TRUE)
+```
+
+Go ahead and run the `loadPenguins` chunk in the `lab03-notes.Rmd` markdown file, and verify that the `penguins` data is in your environment in the top right corner of your RStudio Cloud project.
+
+## Scatterplots with Linear Association
+In lecture, we are focusing our attention to scatterplots that appear to show a **linear** association between two numeric variables. Let's see if there is a linear association between `bill_length_mm` and `body_mass_g`.
+
+## Scatterplot of Bill Length and Body Mass
+```{r lengthMassPlot, echo = FALSE}
+plot(body_mass_g ~ bill_length_mm,
+     data = penguins,
+     main = "Scatterplot of Penguin Body Mass versus 
+     Bill Length",
+     xlab = "Bill Length (mm)",
+     ylab = "Body Mass in (g)")
+```
+
+## Interpreting the Scatterplot
+When interpreting a scatter plot, we want to comment on four key aspects.
+
+1. Direction (positive or negative) 
+2. Form (Linear or Nonlinear) 
+3. Strength (Weak, Moderate, Strong)
+4. Unusual features (even if there are none, we should still comment this)
+
+Let's interpret this scatterplot!
+
+## Interpret the Scatterplot of Bill Length and Body Mass
+Let's start by commenting on the direction. 
+
+<!-- The following slides in green are commented out, so that you can knit two sets of slides: one set for the students without the answers, and one set for class with the answers. To uncomment something, highlight it, and click Command-Shift-c on a Mac or Control-Shift-c on a Windows.  -->
+
+<!-- ## Interpret the Scatterplot of Bill Length and Body Mass -->
+<!-- The direction is **positive**. -->
+
+## Interpret the Scatterplot of Bill Length and Body Mass
+Next, comment on the form.
+
+<!-- ## Interpret the Scatterplot of Bill Length and Body Mass -->
+<!-- The form appears to be linear.  -->
+
+## Interpret the Scatterplot of Bill Length and Body Mass
+Then, discuss the strength.
+
+<!-- ## Interpret the Scatterplot of Bill Length and Body Mass -->
+<!-- The strength is **moderate to strong** (or moderately-strong). -->
+
+## Interpret the Scatterplot of Bill Length and Body Mass
+Finally, discuss whether or not there are unusual features. If you do notice anything unusual, be sure to point out where in the graph (give approximate numeric values).
+
+<!-- ## Interpret the Scatterplot of Bill Length and Body Mass -->
+<!-- There might be some clustering in the scatterplot. It appears as though there are several points with a bill length between 45 and 55 mm that have a lower body mass than the rest of the points. Perhaps this can be explained by the varying species (remember last week's side by side boxplots and the Gentoo penguin species?) -->
+
+## Scatterplot Code
+Let's try this code out in the `tryit1` code chunk. 
+
+```{r lengthMassPlotCode, eval = FALSE}
+plot(body_mass_g ~ bill_length_mm,
+     data = penguins,
+     main = "Scatterplot of Penguin Body Mass versus 
+     Bill Length",
+     xlab = "Bill Length (mm)",
+     ylab = "Body Mass in (g)")
+```
+Be *very* careful setting up scatterplots! 
+
+- Notice that the format of typing the variables in is the $y$ `~` $x$ format, where $x$ is the explanatory variable and $y$ is the response variable. 
+
+- Also notice that we can use the `data = data_name` argument in order to simplify what we write in the first line of code.
+
+## Strength and Correlation
+In class, we have been observing scatterplots and commenting on the strength of the relationship. Earlier in our scatterplot, we observed a moderately-strong positive linear relationship, with no obvious outliers or clustering.
+
+We can quantify the strength by computing a value called the correlation coefficient, *R*. Let's do so using the function `cor()`:
+
+```{r lengthMassCor}
+cor(penguins$bill_length_mm, penguins$body_mass_g)
+```
+Let's try this code together in the `tryit2` code chunk.
+
+## Correlation Matrix
+If we wanted to consider the correlation between multiple numeric variables, we could use `cor()` on every pair of them, but that's tedious. Instead, we'll compute a correlation *matrix*. In order to achieve this, we will have to make sure that the data we send to `cor()` is all numeric variables. It cannot contain categorical variables. 
+
+Unfortunately, this is not the case for the `penguins` data. So we will need to subset the data to only include numeric variables.
+
+To make this subset, we'll use the `subset()` function and the `select` argument. `select` is a vector of variable names in `penguins`. Then, we can find the correlation of this subset that we will call `numericPenguins`.
+
+## Subsetting Data
+This code has been provided to you in the `tryit3` code chunk. Go ahead, take a peek, and hit the green run arrow to run this chunk.
+
+```{r correlationMatrixCode}
+numericPenguins <- subset(penguins,
+                          select = c("bill_length_mm", 
+                                     "bill_depth_mm", 
+                                     "flipper_length_mm", 
+                                     "body_mass_g")
+                          )
+```
+
+## Correlation Matrix
+Let's try this code in the `tryit4` code chunk to see the correlation matrix of the numeric variables contained in the `penguins` data. Don't forget to first run the `tryit3` code chunk and verify that `numericPenguins` is in your environment!
+```{r correlationMatrix, eval = FALSE}
+cor(numericPenguins)
+```
+\scriptsize
+```{r correlationMatrixResults, echo = FALSE}
+cor(numericPenguins)
+```
+\normalsize
+Each "entry" in the correlation matrix is the correlation between the variables labeling that entry's row and column. So for example, the correlation between bill depth and bill length is about -0.229. 
+
+## Using the Correlation Matrix
+Which pair of variables has the strongest correlation (assuming that each pair in fact has a linear relationship)? The output is provided again below.
+
+<!-- ## Using the Correlation Matrix -->
+<!-- The pair of variables with the strongest correlation is body mass and flipper length, because the value of the correlation coefficient is the closest to 1 or -1, at 0.873.  -->
+
+\scriptsize
+```{r correlationMatrixResultsAgain, echo = FALSE}
+cor(numericPenguins)
+```
+\normalsize
+
+## Linear Regression
+We're going to perform a linear regression of body mass on flipper length. This means we're going to use the flipper length as the explanatory variable ($x$) and body mass as the response variable ($y$).
+
+We'll use the function `lm()` (for **l**inear **m**odel), and provide it a formula  \newline 
+(`y ~ x`) and a `data` argument. We'll store that as an object called `line1`. Then, to get detailed results, we'll use the `summary()` function.
+
+## Linear Regression Code
+Let's try this code together in the `tryit5` code chunk.
+
+```{r lm1Code, eval = FALSE}
+line1 <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+summary(line1)
+```
+
+## Linear Regression Output
+Here's what the output looks like for our linear regression model.
+\footnotesize
+```{r lm1, echo = FALSE}
+line1 <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+summary(line1)
+```
+\normalsize
+
+## How to Read the Linear Regression Output
+As we read this table:
+
+- The first two lines are just the code we typed in being displayed.
+- The next piece dealing with *residuals* can be skipped over for now. 
+- We want the piece dealing with the **coefficients**. In the *coefficients* portion of the output, there are two rows of information with four columns. The column we will be dealing with in this lab is the **Estimate** column. 
+
+## How to Read the Linear Regression Output Continued
+- The first row of information is called the **`(Intercept)`**. This represents information about the vertical (y) intercept of the regression line. So if we go to the `Estimate` column in the `(Intercept)` row, we will get the value of the vertical (y) intercept for the least-squares regression line. 
+- Notice that the next row of information is called **`flipper_length_mm`**, which is our explanatory (x) variable. This is a great way to verify that your logic of `y ~ x` was done correctly! This second row will always contain the name of the explanatory variable you chose. If we go to the `Estimate` column of the `flipper_length_mm` row, we will get the value of the slope for the least-squares regression line.
+
+## How to Read the Linear Regression Output Continued
+- The next line has a value called the **residual standard error**, and this value is known as $s$. 
+- Then we will look at the line of output that has the **multiple R-squared** value -- *ignore the adjusted R-squared value*.
+
+## What We Need from the Linear Regression Output
+So again, the values we want to find from this output: 
+
+1. the vertical intercept of the least-squares regression line from our sample data 
+2. the slope of the least-squares regression line from our sample data 
+3. the residual standard error 
+4. the multiple r-squared value which is known as the *coefficient of determination*
+
+What is the equation for the least-squares regression line?
+
+<!-- ## Equation of the Least-squares Regression Line -->
+<!-- $\hat{y} = -5872.09 + 50.15x$, where $\hat{y}$ is the predicted body mass in grams, and $x$ is the flipper length in mm, for penguins on the Palmer Archipelago.  -->
+
+## Adding the Regression Line to the Scatterplot
+We can add the estimated least-squares regression line to our scatterplot by giving the model object to the `abline()` function.
+
+Let's try this out in the `tryit6` in your notes.
+```{r lengthMass-Regression-PlotCode, eval = FALSE}
+plot(penguins$body_mass_g ~ penguins$flipper_length_mm,
+     main = "Scatterplot of Penguin Body Mass versus 
+     Flipper Length",
+     xlab = "Flipepr Length (mm)",
+     ylab = "Body Mass in (g)")
+abline(line1, col = "blue")
+```
+
+## Scatterplot and Least-Squares Regression Line
+```{r lengthMass-Regression-Plot, echo = FALSE}
+plot(penguins$body_mass_g ~ penguins$flipper_length_mm,
+     main = "Scatterplot of Penguin Body Mass versus Flipper Length",
+     xlab = "Flipper Length (mm)",
+     ylab = "Body Mass in (g)")
+abline(line1, col = "blue")
+```
+
+# Questions
+
+## What Questions Do You Have?
+
+# Lab 3 Report
+
+## Work on Lab 3 Report
+It's time to work on your Lab 3 report!
+
+

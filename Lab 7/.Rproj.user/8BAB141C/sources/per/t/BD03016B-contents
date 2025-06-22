@@ -1,0 +1,97 @@
+---
+title: "STATS 250 Lab 3 Solutions"
+author: "DO NOT DISTRIBUTE FOR ANY REASON"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: lumen
+    css: assets/styles.css
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+This week, we'll be using a random sample of 300 entries from this [data set](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-07-07/readme.md) from the Coffee Quality Database collected from the Coffee Quality Institute's [review pages](https://database.coffeeinstitute.org/) in January 2018 by BuzzFeed data scientist [James Ledoux](https://github.com/jldbc/coffee-quality-database). Members of the Coffee Quality Institute tasted and recorded their feedback for the coffee. The data are available to you in `coffee_sample.csv`. 
+
+You might find useful the below descriptions of *some* of the variables (from <https://www.coffeereview.com/interpret-coffee/>)
+
+- **Aroma** refers to smell: "How intense and pleasurable is the aroma when the nose first descends over the cup and is enveloped by fragrance?"
+- **Acidity** "is the bright, dry sensation that enlivens the taste of coffee"
+- **Balance** "appears to mean that no one quality overwhelms all others, but there is enough complexity in the coffee to arouse interest."
+- "**Body** and mouthfeel describe sensations of weight and texture. Body can be light and delicate, heavy and resonant, thin and disappointing; in texture it can be silky, plush, syrupy, lean or thin.
+- "**Flavor** and **aftertaste** include everything not suitably described under the categories aroma, acidity and body.
+- **Clean cup** is referring to the absence of non-coffee tastes or aromas in the cup.
+- **Cupper points** are an individual rater's holistic perception of the cup.
+- **Total cup points** is the sum of the ratings for flavor, aroma, aftertaste, acidity, body, balance, uniformity, sweetness, "clean cup", and cupper points.
+
+Here's some more information about coffee tasting that you might find interesting: <https://www.coffeeiq.co/en/a-look-at-coffee-tasting/>. 
+
+## Research Questions
+
+1. Which of the variables body, acidity, or balance is the best predictor of a coffee's total cup points? Why?
+2. Create a graphical display (plot) including the linear regression line using the variable you chose in question 1 (to best predict total cup points) and total cup points.
+3. Using the plot you created for Question 2, comment on the relationship between the two variables (in terms of the overall form, the direction of the association, the strength of the association, and if there are any unusual features). 
+4. Write the equation for the least-squares regression line. Include context. 
+
+# Background
+
+## Population of Interest
+
+The population of interest is all coffee evaluated by the Coffee Quality Institute.
+
+## About the Data
+
+There are 300 observations in this data set. The data was collected as part of the Coffee Quality Institute's rating system.
+
+## Study Design
+
+This was an observational study, as there is no control or treatment groups being assigned.
+
+# Methods
+
+1. I will read in the data set.
+2. I will create a subset of just the numeric variables `body`, `acidity`, `balance`, and `total_cup_points`.
+3. I will create a correlation matrix of this numeric subset in order to determine which of `body`, `balance`, and `acidity` have the strongest relationship with `total_cup_points`.
+4. I will create a linear regression analysis on these two variables, then print out some summary information.
+5. I will create a scatterplot of these two variables, and will include the least-squares regression line in the plot.
+
+# Results
+
+```{r readInData, error = T}
+coffee <- read.csv("coffee_sample.csv", stringsAsFactors = TRUE)
+```
+
+```{r chunk1, error = T}
+coffee_subset <- subset(coffee, select = c("body", "acidity", "balance", "total_cup_points"))
+```
+
+```{r chunk2, error = T}
+cor(coffee_subset)
+```
+
+```{r chunk3, error = T}
+coffee_line <- lm(total_cup_points ~ balance, data = coffee_subset)
+summary(coffee_line)
+```
+
+```{r chunk4, error = T}
+plot(total_cup_points ~ balance,
+     data = coffee_subset,
+     main = "Scatterplot of Coffee Total Cup Points by Balance",
+     xlab = "Balance Rating",
+     ylab = "Total Cup Points")
+abline(coffee_line, col = "blue")
+```
+
+# Conclusion
+
+1. The best predictor for a coffee's total cup points is the variable balance. This is because it has the highest strength among the variables body, acidity, and balance, with a correlation of 0.724.
+2. Scatterplot created above.
+3. The relationship between balance and total cup points is positive, linear, moderately strong, with some potential outliers between a balance rating of 7.5 and 8.0 and total cup points of less than 75.
+4. predicted total cup points = 41.503 + 5.397(balance rating)
